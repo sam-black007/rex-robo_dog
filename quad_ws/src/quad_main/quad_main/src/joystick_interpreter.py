@@ -54,10 +54,9 @@ class JoystickInterpreter():
            
         if self.motion_inputs.motion_state == MotionState.MOTION:
 
-            #self.motion_inputs.yaw_rate = self.map(
-            #    axes[LEFT_X], -1, 1, self.motion_parameters['yaw_rate_min'], self.motion_parameters['yaw_rate_max'])
+            # Step length: swap min/max so stick forward = robot forward (fixes inverted axis on some controllers)
             self.motion_inputs.step_length = self.map(
-                axes[AxesMap.LEFT_Y.value], -1, 1, self.motion_parameters['step_length_min'], self.motion_parameters['step_length_max'])          
+                axes[AxesMap.LEFT_Y.value], -1, 1, self.motion_parameters['step_length_max'], self.motion_parameters['step_length_min'])
             self.motion_inputs.yaw_rate = self.map(
                axes[AxesMap.RIGHT_X.value], -1, 1, self.motion_parameters['yaw_rate_min'], self.motion_parameters['yaw_rate_max'])            
             self.motion_inputs.pos[2] = - self.map(
