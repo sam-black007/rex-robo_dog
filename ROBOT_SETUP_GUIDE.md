@@ -12,7 +12,7 @@ Before starting, ensure you have:
 - [ ] PCA9685 servo driver board (I2C address 0x40)
 - [ ] 12 RC servos connected to PCA9685 according to pin layout
 - [ ] Power supply for servos
-- [ ] PS4 controller (wired or wireless)
+- [ ] PS5/PS4 controller (wired or wireless) - See **PS5_CONTROLLER_GUIDE.md**
 - [ ] Network connection (Ethernet or Wi-Fi)
 - [ ] Assembled Zuko frame v2.2
 
@@ -115,53 +115,85 @@ sudo i2cdetect -y 1
 # Should show PCA9685 at address 0x40
 ```
 
-## Step 3: Servo Calibration
+## Step 3: Servo Calibration (DS3218SSG Pro)
 
-**CRITICAL:** You must calibrate all servos before running the robot!
+**Good News:** The DS3218SSG Pro digital servos have consistent behavior, so calibration is simpler than with analog servos. You mainly need to set the **zero position** for each servo—the pulse-width-per-degree ratio (7.41) is already configured.
 
 ### 3.1 Safety First
 - [ ] **Detach all legs from the frame** to prevent damage during calibration
 - [ ] Ensure servos are free to move without hitting mechanical limits
+- [ ] Have servo power supply ready (ensure adequate current for 12 servos)
 
-### 3.2 Run Calibration
+### 3.2 Run Enhanced Calibration Tool (Recommended)
+
+The v2 calibration tool provides degree-based movement and visual feedback:
+
 ```bash
-cd ~/zuko/quad_ws/src/quad_motors/quad_motors/
-chmod +x servo_calibration.py
-./servo_calibration.py
+cd ~/rex-zuko-try/quad_ws/src/quad_motors/quad_motors/
+chmod +x servo_calibration_v2.py
+./servo_calibration_v2.py
 ```
 
-### 3.3 Calibration Process
+### 3.3 Quick Calibration Process
 
-For each servo (0-11):
+For the DS3218SSG Pro, you primarily need to calibrate the **zero position**:
 
-1. **Select servo:** Type `select <number>` (0-11)
-2. **Set zero position:** 
-   - Move servo to zero position manually or with commands
-   - Type `zero <pulse_width>` (typically 1500, range 500-2500)
-3. **Set pulse width per degree:** Type `ratio <value>` (typically 11.5)
-4. **Set limits:** 
-   - Type `min <degrees>` (e.g., `min -30` for hips)
-   - Type `max <degrees>` (e.g., `max 90` for femurs)
-5. **Invert if needed:** Type `invert` to reverse direction
-6. **Test:** Type a pulse width value (e.g., `1500`) to test movement
+1. **Select servo:** `select 0` (or use `next`/`prev` to navigate)
+2. **Find zero position:** 
+   - Manually position the leg to its neutral stance
+   - Use `+5` or `-10` to adjust by degrees
+   - When aligned, type `set_zero` to mark current position as 0°
+3. **Test the range:** Type `sweep` to automatically test movement
+4. **Repeat** for all 12 servos
 
-### 3.4 Calibration Reference
+### 3.4 Enhanced Calibration Commands
+
+| Command | Description |
+|---------|-------------|
+| `goto 45` | Move to 45 degrees |
+| `+10` / `-5` | Adjust angle by degrees |
+| `center` | Move to 0 degrees |
+| `set_zero` | Mark current position as 0° |
+| `sweep` | Test full range of motion |
+| `test` | Run movement pattern |
+| `zero_all` | Set all servos to zero |
+| `group hips` | Move all hips to center |
+| `help` | Show all commands |
+
+### 3.5 DS3218SSG Pro Specifications
+
+The servo parameters are pre-configured for DS3218SSG Pro:
+- **Pulse Range:** 500-2500 µs
+- **Rotation Range:** 270°
+- **Pulse Per Degree:** 7.41 (already set, no adjustment needed)
+- **Center Pulse:** ~1500 µs (varies slightly per servo)
+
+### 3.6 Joint Limits Reference
 
 Expected joint limits (adjust based on your frame):
 - **Hips (0, 3, 6, 9):** -30° to +30°
-- **Femurs (1, 4, 7, 10):** 0° to 90°
+- **Femurs (1, 4, 7, 10):** 0° to 90°  
 - **Tibias (2, 5, 8, 11):** 0° to 90° (or as needed for linked-leg system)
 
-### 3.5 Verify Calibration File
+### 3.7 Verify Calibration File
 ```bash
-cat ~/zuko/quad_ws/src/quad_motors/config/servo_parameters.yaml
-# Verify all values are set correctly
+cat ~/rex-zuko-try/quad_ws/src/quad_motors/config/servo_parameters.yaml
+# Verify all zero_degrees_pulse_width values are set correctly
+```
+
+### 3.8 Legacy Calibration Tool
+
+The original calibration script is still available if needed:
+```bash
+./servo_calibration.py  # Original command-line tool
 ```
 
 ## Step 4: Controller Setup
 
+> 📖 **See [PS5_CONTROLLER_GUIDE.md](PS5_CONTROLLER_GUIDE.md) for full control scheme documentation.**
+
 ### 4.1 Wired Controller
-- Simply connect PS4 controller via USB
+- Connect PS5/PS4 controller via USB
 - Verify detection: `ls /dev/input/js*`
 
 ### 4.2 Wireless Controller (Optional)
@@ -171,7 +203,7 @@ sudo reboot
 sudo bluetoothctl
 # In bluetoothctl:
 scan on
-# Put controller in pairing mode (Share + PS buttons)
+# Put controller in pairing mode (Share + PS buttons for PS4, Create + PS for PS5)
 connect <MAC_ADDRESS>
 trust <MAC_ADDRESS>
 exit
@@ -183,6 +215,18 @@ sudo apt install jstest-gtk -y
 jstest-gtk
 # Test all buttons and axes
 ```
+
+### 4.4 Control Scheme Summary
+
+| Control | Action |
+|---------|--------|
+| **✕ Cross** | STAND mode |
+| **○ Circle** | SIT mode |
+| **△ Triangle** | POSE mode (body control) |
+| **□ Square** | JOG mode (walking) |
+| **L1** | Cycle through modes |
+| **Left Stick** | Movement (JOG) / Orientation (POSE) |
+| **Right Stick** | Yaw/Height |
 
 ## Step 5: First Test Run
 
@@ -201,14 +245,14 @@ sudo i2cdetect -y 1
 
 **Test Servo Communication:**
 ```bash
-cd ~/zuko/quad_ws/src/quad_motors/quad_motors/
+cd ~/rex-zuko-try/quad_ws/src/quad_motors/quad_motors/
 ./servo_calibration.py
 # Use "zero_all" command to set all servos to zero
 ```
 
 **Test Gamepad:**
 ```bash
-cd ~/zuko/quad_ws
+cd ~/rex-zuko-try/quad_ws
 source install/local_setup.bash
 ros2 run quad_gamepad quad_gamepad --ros-args -p joystick_number:=0
 # In another terminal:
@@ -220,14 +264,14 @@ ros2 topic echo /joy
 
 **Start with simulation to verify software:**
 ```bash
-cd ~/zuko/quad_ws
+cd ~/rex-zuko-try/quad_ws
 source install/local_setup.bash
 ros2 launch quad_main quad_all.launch.py
 ```
 
 **For live robot operation:**
 ```bash
-cd ~/zuko/quad_ws
+cd ~/rex-zuko-try/quad_ws
 source install/local_setup.bash
 ros2 launch quad_main quad_live.launch.py
 ```
@@ -255,7 +299,7 @@ rqt_graph
 
 Edit motion parameters for your specific robot:
 ```bash
-nano ~/zuko/quad_ws/src/quad_main/config/motion_parameters.yaml
+nano ~/rex-zuko-try/quad_ws/src/quad_main/config/motion_parameters.yaml
 ```
 
 Key parameters to adjust:
@@ -269,14 +313,14 @@ Key parameters to adjust:
 
 If your frame dimensions differ, update:
 ```bash
-nano ~/zuko/quad_ws/src/quad_main/config/frame_parameters.yaml
+nano ~/rex-zuko-try/quad_ws/src/quad_main/config/frame_parameters.yaml
 ```
 
 ### 6.3 Servo Parameters
 
 If you need to adjust servo calibration:
 ```bash
-cd ~/zuko/quad_ws/src/quad_motors/quad_motors/
+cd ~/rex-zuko-try/quad_ws/src/quad_motors/quad_motors/
 ./servo_calibration.py
 ```
 
@@ -287,7 +331,7 @@ To automatically start the robot on boot:
 1. Create a systemd service (advanced) or
 2. Add to `.bashrc`:
 ```bash
-echo "cd ~/zuko/quad_ws && source install/local_setup.bash && ros2 launch quad_main quad_live.launch.py" >> ~/.bashrc
+echo "cd ~/rex-zuko-try/quad_ws && source install/local_setup.bash && ros2 launch quad_main quad_live.launch.py" >> ~/.bashrc
 ```
 
 **Note:** Auto-start is not recommended until you've thoroughly tested the robot.
@@ -309,7 +353,7 @@ echo "cd ~/zuko/quad_ws && source install/local_setup.bash && ros2 launch quad_m
 
 3. **Verify servo calibration file exists:**
    ```bash
-   ls ~/zuko/quad_ws/src/quad_motors/config/servo_parameters.yaml
+   ls ~/rex-zuko-try/quad_ws/src/quad_motors/config/servo_parameters.yaml
    ```
 
 4. **Check servo power supply:**
@@ -341,7 +385,7 @@ echo "cd ~/zuko/quad_ws && source install/local_setup.bash && ros2 launch quad_m
 
 1. **Rebuild workspace:**
    ```bash
-   cd ~/zuko/quad_ws
+   cd ~/rex-zuko-try/quad_ws
    colcon build
    source install/local_setup.bash
    ```
@@ -377,7 +421,7 @@ After successful setup:
 
 ```bash
 # Build workspace
-cd ~/zuko/quad_ws
+cd ~/rex-zuko-try/quad_ws
 colcon build
 
 # Source workspace
@@ -386,9 +430,9 @@ source install/local_setup.bash
 # Launch robot
 ros2 launch quad_main quad_live.launch.py
 
-# Calibrate servos
+# Calibrate servos (DS3218SSG Pro optimized)
 cd src/quad_motors/quad_motors/
-./servo_calibration.py
+./servo_calibration_v2.py
 
 # Check I2C
 sudo i2cdetect -y 1
@@ -409,6 +453,7 @@ ros2 topic echo /joy
 
 - Project Overview: See `PROJECT_OVERVIEW.md`
 - Installation Guide: See `INSTALL_RPI.md`
+- Controller Guide: See `PS5_CONTROLLER_GUIDE.md`
 - Pin Mapping: See `quad_ws/src/quad_motors/PIN_MAPPING.md`
 - Development Notes: See `quad_ws/dev-notes/`
 

@@ -158,6 +158,7 @@ class Kinematics:
         z = xyz_coord[2]
         D = self._get_domain(x, y, z)
 
+        # Left and right legs need different shoulder offset for geometry
         if legType == "FR" or legType == "BR":
             shoulder_direction_offset = -1
         elif legType == "FL" or legType == "BL":
