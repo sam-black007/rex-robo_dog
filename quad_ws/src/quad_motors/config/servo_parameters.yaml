@@ -49,16 +49,16 @@ min_degrees:
 max_degrees:
 - 45  # 0: FL Hip
 - 45  # 1: FL Femur
-- 0   # 2: FL Tibia
+- 45  # 2: FL Tibia (was 0 - prevented movement on ground; expand so tibia can track gait)
 - 45  # 3: FR Hip
 - 45  # 4: FR Femur
-- 0   # 5: FR Tibia
+- 45  # 5: FR Tibia
 - 45  # 6: BL Hip
 - 45  # 7: BL Femur
-- 0   # 8: BL Tibia
+- 45  # 8: BL Tibia
 - 45  # 9: BR Hip
 - 45  # 10: BR Femur
-- 0   # 11: BR Tibia
+- 45  # 11: BR Tibia
 
 pulse_width_per_degree:
 - 7.41  # DS3218SSG Pro (270° range)
