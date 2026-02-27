@@ -1,0 +1,21 @@
+# Zuko Robot - Run ROS2 in Docker on Raspberry Pi OS
+# Host: Raspberry Pi OS. Container: Ubuntu 22.04 + ROS2 Humble.
+# I2C (PCA9685) and USB gamepad are passed through for seamless control.
+
+services:
+  zuko-ros2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: rex-zuko-try-ros2:latest
+    container_name: zuko-ros2
+    network_mode: host
+    privileged: true
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
+    environment:
+      - ROS_DOMAIN_ID=0
+    command: ["bash", "docker/run.sh"]
+    stdin_open: true
+    tty: true
