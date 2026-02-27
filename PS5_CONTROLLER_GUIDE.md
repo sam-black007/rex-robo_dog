@@ -2,6 +2,8 @@
 
 This document describes how to use the PS5 (DualSense) controller to operate the robot.
 
+On the Raspberry Pi, the recommended setup is **Raspberry Pi OS (Bookworm, 64‑bit)** with **ROS2 running inside a Docker container**. See `INSTALL_RPI.md` and `ROBOT_SETUP_GUIDE.md` for how to start the ROS2 stack in Docker; all `ros2 ...` commands here should be run in that environment.
+
 > **Note:** The PS5 controller uses PS4 compatibility mode, so button mappings are the same as PS4.
 
 ---
@@ -123,7 +125,7 @@ In POSE mode, the analog sticks control body orientation without walking.
    - Via USB cable, or
    - Via Bluetooth (pair with Share + PS buttons)
 
-2. **Launch the robot**
+2. **Launch the robot** (in your ROS2 environment – on Pi this is inside the Docker container)
    ```bash
    ros2 launch quad_main quad_main.launch.py
    ```

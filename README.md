@@ -55,8 +55,14 @@ Zuko uses the ROS2 framework for communication, launching, and 3rd party addons.
 
 ### Quick setup (Raspberry Pi)
 
-1. **Install Raspberry Pi OS** (64-bit) and enable I2C.
-2. **Install Docker:** `sudo apt install docker.io docker-compose-v2 && sudo usermod -aG docker $USER`
+1. **Install Raspberry Pi OS (Bookworm, 64-bit)** and enable I2C.
+2. **Install Docker (Bookworm):**
+   ```bash
+   sudo apt update
+   curl -fsSL https://get.docker.com | sh
+   sudo usermod -aG docker $USER
+   sudo apt install -y docker-compose-plugin
+   ```
 3. **Clone and run:**
    ```bash
    git clone --filter=blob:none --sparse https://github.com/MrTheMech/rex-zuko-try.git

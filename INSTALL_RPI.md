@@ -51,16 +51,30 @@ This guide sets up the Zuko quadruped on **Raspberry Pi OS** with **ROS2 Humble 
 
 ## Step 3: Install Docker
 
-1. Install Docker and Docker Compose:
+On **Raspberry Pi OS (Bookworm, 64‑bit)**, install Docker using the official convenience script and Docker Compose v2 as a plugin:
+
+1. Install Docker Engine:
    ```bash
    sudo apt update
-   sudo apt install -y docker.io docker-compose-v2
+   curl -fsSL https://get.docker.com | sh
+   ```
+
+2. Add your user to the `docker` group (so you can run Docker without `sudo`):
+   ```bash
    sudo usermod -aG docker $USER
    ```
-2. Log out and back in (or reboot) so the `docker` group applies.
-3. Test:
+   Log out and back in (or reboot) so the new group membership takes effect.
+
+3. Install Docker Compose v2 plugin:
    ```bash
-   docker run hello-world
+   sudo apt update
+   sudo apt install -y docker-compose-plugin
+   ```
+
+4. Test Docker and Compose:
+   ```bash
+   docker run --rm hello-world
+   docker compose version
    ```
 
 ---

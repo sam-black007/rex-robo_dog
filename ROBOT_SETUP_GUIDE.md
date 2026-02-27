@@ -62,9 +62,11 @@ The recommended setup is **Raspberry Pi OS** on the Pi with **ROS2 Humble in Doc
 sudo raspi-config
 # Interfacing Options → I2C → Enable, then reboot
 
-sudo apt install -y docker.io docker-compose-v2
+sudo apt update
+curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
-# Log out and back in (or reboot)
+sudo apt install -y docker-compose-plugin
+# Log out and back in (or reboot) so docker group + compose plugin are active
 ```
 
 ### 2.3 Clone Repository
