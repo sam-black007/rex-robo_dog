@@ -160,12 +160,16 @@ class JoystickInterpreter():
     def _handle_jog_mode(self, axes):
         """Handle analog sticks in JOG mode - control walking with left stick"""
         
-        # LEFT STICK Y = Forward/Backward
+        # LEFT STICK Y = Forward/Backward (JUGAAD: Negating to test direction flip)
         left_y = self.apply_deadzone(axes[AxesMap.LEFT_Y.value])
         self.motion_inputs.step_length = self.map(
             left_y, -1, 1, 
-            self.motion_parameters['step_length_min'], 
-            self.motion_parameters['step_length_max'])
+            self.motion_parameters['step_length_max'], 
+            self.motion_parameters['step_length_min'])
+        
+        # JUGAAD DEBUG
+        if abs(self.motion_inputs.step_length) > 0.01:
+            print(f"[JUGAAD] Target Stride L: {self.motion_inputs.step_length:7.3f}")
         
         # LEFT STICK X = Strafe Left/Right (lateral fraction)
         # Map -1 to 1 stick range to -pi/2 to pi/2 for full 90 deg strafing
