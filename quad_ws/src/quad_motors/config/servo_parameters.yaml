@@ -5,11 +5,11 @@
 # Inversions handled by calibration tool - all set to false
 invert_direction:
 - false  # 0: FL Hip (Left)
-- true   # 1: FL Femur (Left) - FLIPPED
-- true   # 2: FL Tibia (Left) - FLIPPED
+- false  # 1: FL Femur (Left)
+- false  # 2: FL Tibia (Left)
 - true   # 3: FR Hip (Right)
-- false  # 4: FR Femur (Right) - FLIPPED
-- false  # 5: FR Tibia (Right) - FLIPPED
+- true   # 4: FR Femur (Right)
+- true   # 5: FR Tibia (Right)
 - false  # 6: BL Hip (Left)
 - false  # 7: BL Femur (Left)
 - false  # 8: BL Tibia (Left)

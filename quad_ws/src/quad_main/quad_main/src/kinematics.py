@@ -173,7 +173,7 @@ class Kinematics:
         shoulder_angle = -np.arctan2(z, y) - np.arctan2(
             np.sqrt(sqrt_component), shoulder_direction_offset * self.shoulder_length)
 
-        upper_leg_angle = np.arctan2(-x, np.sqrt(sqrt_component)) - np.arctan2(
+        upper_leg_angle = np.arctan2(x, np.sqrt(sqrt_component)) - np.arctan2(
             self.lower_leg_length * np.sin(lower_leg_angle),
             self.upper_leg_length + self.lower_leg_length * np.cos(lower_leg_angle))
    
