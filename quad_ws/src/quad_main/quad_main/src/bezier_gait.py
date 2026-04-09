@@ -487,8 +487,9 @@ class BezierGait():
             self.time_since_last_TD = 0.0
             YawRate = 0.0
         # NOTE: MUCH MORE STABLE WITH THIS
-        elif Tstance > 1.3 * self.Tswing:
-            Tstance = 1.3 * self.Tswing
+        # NOTE: CHANGED TO 3.5 FOR STABLE CREEP GAIT (3 legs on ground)
+        elif Tstance > 3.5 * self.Tswing:
+            Tstance = 3.5 * self.Tswing
 
         # Check contacts
         if contacts[0] == 1 and Tstance > dt:
@@ -499,16 +500,17 @@ class BezierGait():
         T_bf = copy.deepcopy(T_bf_)
         for i, (key, Tbf_in) in enumerate(T_bf_.items()):
             
-            # TODO: MAKE THIS MORE ELEGANT
+            # DEEP MAGIC: Creep Gait (4-Beat Sequence)
+            # FL -> BR -> FR -> BL 
             if key == "FL":
                 self.ref_idx = i
                 self.dSref[i] = 0.0
             if key == "FR":
                 self.dSref[i] = 0.5
             if key == "BL":
-                self.dSref[i] = 0.5
+                self.dSref[i] = 0.75
             if key == "BR":
-                self.dSref[i] = 0.0
+                self.dSref[i] = 0.25
             
             _, p_bf = TransToRp(Tbf_in)
             

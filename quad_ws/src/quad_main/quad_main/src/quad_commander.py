@@ -15,15 +15,23 @@ class QuadCommander():
 
     def tick(self, motion_inputs): 
        
-        pos = motion_inputs.pos
-        orn = motion_inputs.orn
-        step_length = motion_inputs.step_length        
+        # DEEP MAGIC: Shift body 3cm forward and 5-degree nose-down
+        pos = copy.deepcopy(motion_inputs.pos)
+        pos[0] += 0.03  # 3cm forward shift
+        
+        orn = copy.deepcopy(motion_inputs.orn)
+        orn[1] -= 0.087 # -5 degrees (nose-down)
+        
+        # DEEP MAGIC: Global Gait Inversion
+        step_length = -motion_inputs.step_length        
+        
         yaw_rate = motion_inputs.yaw_rate
         lateral_fraction = motion_inputs.lateral_fraction  # From left stick X-axis
     
         step_velocity = self.motion_parameters['step_velocity']
-        clearance_height = self.motion_parameters['clearance_height']     
-        penetration_depth = self.motion_parameters['penetration_depth'] 
+        # EXTREME STOMP: Increase clearance and penetration for heavy traction
+        clearance_height = 0.100     
+        penetration_depth = 0.020 
 
         contacts = [0, 0, 0, 0] # TODO
         
