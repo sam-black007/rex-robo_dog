@@ -3,13 +3,13 @@
 '''
 
 from src.kinematics import Kinematics
-from src.bezier_gait import BezierGait
+from src.dingo_gait import DingoGait
 import copy
 
 class QuadCommander():
     def __init__(self, motion_parameters, frame_parameters, linked_leg_parameters): 
         self.motion_parameters = motion_parameters          
-        self.bezier_gait = BezierGait(dt=0.01)
+        self.dingo_gait = DingoGait(dt=0.01)
         self.kinematics = Kinematics(frame_parameters, linked_leg_parameters)  
     
 
@@ -31,7 +31,7 @@ class QuadCommander():
         # yaw correction TODO  
 
         # Get feet positions.       
-        self.T_bf = self.bezier_gait.GenerateTrajectory(
+        self.T_bf = self.dingo_gait.GenerateTrajectory(
             step_length, lateral_fraction, yaw_rate, step_velocity, self.kinematics.WorldToFoot, clearance_height, penetration_depth, contacts)
 
         joint_angles = self.kinematics.inverse_kinematics(orn, pos, self.T_bf)              
