@@ -4,18 +4,18 @@
 
 # Inversions handled by calibration tool - all set to false
 invert_direction:
-- true   # 0: FL Hip
-- true   # 1: FL Femur
-- true   # 2: FL Tibia
-- true   # 3: FR Hip
-- true   # 4: FR Femur
-- true   # 5: FR Tibia
-- true   # 6: BL Hip
-- true   # 7: BL Femur
-- true   # 8: BL Tibia
-- true   # 9: BR Hip
-- true   # 10: BR Femur
-- true   # 11: BR Tibia
+- false  # 0: FL Hip (Left)
+- false  # 1: FL Femur (Left)
+- false  # 2: FL Tibia (Left)
+- true   # 3: FR Hip (Right)
+- true   # 4: FR Femur (Right)
+- true   # 5: FR Tibia (Right)
+- false  # 6: BL Hip (Left)
+- false  # 7: BL Femur (Left)
+- false  # 8: BL Tibia (Left)
+- true   # 9: BR Hip (Right)
+- true   # 10: BR Femur (Right)
+- true   # 11: BR Tibia (Right)
 
 map_joint_index_to_driver_pin:
 - 4   # Joint 0: FL Hip -> PIN4

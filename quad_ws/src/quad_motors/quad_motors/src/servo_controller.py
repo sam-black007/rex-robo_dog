@@ -29,52 +29,61 @@ class ServoController():
     def __init__(self, bus_index, device_address, servo_parameters):
         self.servo_parameters = servo_parameters
         self.servo_driver = PCA9685Servos(bus_index, device_address)
+        self.audit_done = False
 
     def clamp(self, num, min_val, max_val):
         return (max(min(num, max_val), min_val))
 
     def set_servo_angles(self, servo_angles):
-        # We only log joint 1 (FL Femur) and Joint 4 (FR Femur) to avoid log spam
-        # but keep it detailed enough to see the math.
-        debug_joints = [1, 4] 
+        # Tracking for debug logging
+        debug_joints = [1, 2, 4, 5] 
+        
+        if not self.audit_done:
+            print("\n" + "="*50)
+            print("          ROBOT STARTUP SERVO AUDIT")
+            print("="*50)
 
         for i in range(12): 
-            zero_degrees_pulse_width = self.servo_parameters['zero_degrees_pulse_width'][i]
-            pulse_width_per_degree = self.servo_parameters['pulse_width_per_degree'][i]
-            invert_direction = self.servo_parameters['invert_direction'][i]
-            min_degrees = self.servo_parameters['min_degrees'][i]
-            max_degrees = self.servo_parameters['max_degrees'][i]
-            hardware_pin = self.servo_parameters['map_joint_index_to_driver_pin'][i]
-            
-            # Incoming angle in radians (Standard ROS convention)
-            raw_radians = servo_angles[i]
-            angle_deg = raw_radians * (180.0 / pi)
-
-            # 1. Apply Home Offset
-            # This maps the library's 'Stand' pose to our calibrated '0' pose.
-            home_offset = 0.0
-            if 'home_angle_offset' in self.servo_parameters:
-                home_offset = self.servo_parameters['home_angle_offset'][i]
-            
-            offset_adjusted_angle = angle_deg - home_offset
-
-            # 2. Apply Inversion
-            # If inverted, positive joint rotation = negative servo rotation.
-            final_angle = offset_adjusted_angle
-            if invert_direction:
-                final_angle = -offset_adjusted_angle
-
-            # 3. Clamp to mechanical limits
-            clamped_angle = self.clamp(final_angle, min_degrees, max_degrees)
+            try:
+                zero_degrees_pulse_width = self.servo_parameters['zero_degrees_pulse_width'][i]
+                pulse_width_per_degree = self.servo_parameters['pulse_width_per_degree'][i]
+                invert_direction = self.servo_parameters['invert_direction'][i]
+                min_degrees = self.servo_parameters['min_degrees'][i]
+                max_degrees = self.servo_parameters['max_degrees'][i]
+                hardware_pin = self.servo_parameters['map_joint_index_to_driver_pin'][i]
                 
-            # 4. Convert to Pulse Width
-            pulse_width = (clamped_angle * pulse_width_per_degree) + zero_degrees_pulse_width
+                # Incoming angle in radians (Standard ROS convention)
+                angle_deg = servo_angles[i] * (180.0 / pi)
 
-            # Internal driver clamping for safety
-            self.servo_driver.set_pulse_width(hardware_pin, int(pulse_width))
+                # 1. Apply Home Offset
+                home_offset = 0.0
+                if 'home_angle_offset' in self.servo_parameters:
+                    home_offset = self.servo_parameters['home_angle_offset'][i]
+                
+                offset_adjusted_angle = angle_deg - home_offset
 
-            # Debug logging for selected joints
-            if i in debug_joints:
-                print(f"[DEBUG] Joint {i} Pin {hardware_pin}: Raw={angle_deg:>6.2f}° | Offset={home_offset:>6.2f}° | Invert={invert_direction} | Final={clamped_angle:>6.2f}° | Pulse={int(pulse_width)}")
+                # 2. Apply Inversion
+                final_angle = offset_adjusted_angle
+                if invert_direction:
+                    final_angle = -offset_adjusted_angle
+
+                # 3. Clamp
+                clamped_angle = self.clamp(final_angle, min_degrees, max_degrees)
+                    
+                # 4. Convert to Pulse Width
+                pulse_width = (clamped_angle * pulse_width_per_degree) + zero_degrees_pulse_width
+
+                self.servo_driver.set_pulse_width(hardware_pin, int(pulse_width))
+
+                # Startup Audit - One time report for all joints
+                if not self.audit_done:
+                    print(f"[AUDIT] Joint {i:2d} -> Pin {hardware_pin:2d} | Invert: {str(invert_direction):5s} | Angle: {angle_deg:>6.2f}° | Pulse: {int(pulse_width)}")
+            except Exception as e:
+                if not self.audit_done:
+                    print(f"[ERROR] Failed to process joint {i}: {e}")
+
+        if not self.audit_done:
+            print("="*50 + "\n")
+            self.audit_done = True
 
 
