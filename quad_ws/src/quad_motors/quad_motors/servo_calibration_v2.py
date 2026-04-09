@@ -348,6 +348,11 @@ def main():
         print("║  • I2C permissions are set (sudo chmod a+rw /dev/i2c-*)      ║")
         print("╚══════════════════════════════════════════════════════════════╝")
         sys.exit(1)
+
+    if not driver.is_alive():
+        print("\n  ⚠️  WARNING: PCA9685 at 0x40 is not responding!")
+        print("  Check wiring and ensure the servo driver is powered.")
+        input("\n  Press Enter to try continuing anyway, or Ctrl+C to exit...")
     
     # Set all servos to zero position on startup
     print("\n  Initializing all servos to zero position...")

@@ -60,25 +60,43 @@ class PCA9685Servos:
         self.min_pulse_width = 500  # DS3218SSG Pro minimum
         self.max_pulse_width = 2500  # DS3218SSG Pro maximum      
                    
-        bus = SMBus(self.bus_index)
+        try:
+            self.bus = SMBus(self.bus_index)
+            # Set PWM frequency
+            self._write_byte(PCA9685_MODE1_REG, PCA9685_MODE1_SLEEP)
+            prescale_val = int((self.reference_clock_speed_hz / (4096 * self.frequency_hz)) - 1)    
+            self._write_byte(PCA9685_PRESCALE_REG, prescale_val)
+            self._write_byte(PCA9685_MODE1_REG, ~PCA9685_MODE1_SLEEP) 
+            sleep(0.005)
+        except Exception as e:
+            print(f"PCA9685 Initialization Failed: {e}")
+            raise
 
-        # Set PWM frequency
-        bus.write_byte_data(self.address, PCA9685_MODE1_REG, PCA9685_MODE1_SLEEP)
-        prescale_val = int((self.reference_clock_speed_hz / (4096 * self.frequency_hz)) - 1)    
-        bus.write_byte_data(self.address, PCA9685_PRESCALE_REG, prescale_val)
-        bus.write_byte_data(self.address, PCA9685_MODE1_REG, ~PCA9685_MODE1_SLEEP) 
-        sleep(0.005)       
+    def __del__(self):
+        try:
+            self.bus.close()
+        except:
+            pass
 
-        bus.close()
+    def _write_byte(self, reg, value, retries=3):
+        """Internal helper to write byte data with retries."""
+        for i in range(retries):
+            try:
+                self.bus.write_byte_data(self.address, reg, value)
+                return True
+            except OSError as e:
+                if i == retries - 1:
+                    print(f"I2C Write Failed to reg {hex(reg)} at address {hex(self.address)}: {e}")
+                    raise
+                sleep(0.001)
+        return False
 
     def set_pulse_width(self, channel, pulse_width):
-
-        bus = SMBus(self.bus_index)
         '''
         :param int channel: 0 - 16 PCA9685 channel.  
         :param int pulse_width: Servo pulse width typically 1500 - 2500 microseconds.  
         '''
-        if channel < 0 | channel > 15:
+        if channel < 0 or channel > 15:
             return
         
         if pulse_width < self.min_pulse_width:
@@ -90,12 +108,13 @@ class PCA9685Servos:
         reg = PCA9685_LED0_REG + (channel * 0x04)
                
         phase_begin = 0
-        #phase_end = (phase_begin + pulse_width) & PCA9685_PWM_MASK
         phase_end = int(((4016 / 20000) * pulse_width)) & PCA9685_PWM_MASK
 
-        bus.write_byte_data(self.address, reg, phase_begin & 0xFF)
-        bus.write_byte_data(self.address, reg + 1, (phase_begin >> 8) & 0xFF)
-        bus.write_byte_data(self.address, reg + 2, phase_end & 0xFF)
-        bus.write_byte_data(self.address, reg + 3, (phase_end >> 8) & 0xFF)
-
-        bus.close()
+        try:
+            self._write_byte(reg, phase_begin & 0xFF)
+            self._write_byte(reg + 1, (phase_begin >> 8) & 0xFF)
+            self._write_byte(reg + 2, phase_end & 0xFF)
+            self._write_byte(reg + 3, (phase_end >> 8) & 0xFF)
+        except OSError:
+            # Log failure but don't necessarily crash the whole process
+            pass

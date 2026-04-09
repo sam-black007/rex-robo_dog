@@ -120,10 +120,9 @@ def main(args=None):
         print("Error: I2C not found!")
         exit(1)
 
-    # TODO: read exception is occuring despite device working, might be a timing issue
-    #if servo_driver.is_alive() == False:
-    #   print("I2C device not responding.")
-    #    exit()
+    if servo_driver.is_alive() == False:
+        print("I2C device not responding. Check wiring and power.")
+        exit()
     
     while True:
         print_screen(motion_servo_parameters_path, selected_servo, servo_pulse_widths, parameters)
