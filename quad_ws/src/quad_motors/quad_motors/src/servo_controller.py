@@ -35,14 +35,6 @@ class ServoController():
         return (max(min(num, max_val), min_val))
 
     def set_servo_angles(self, servo_angles):
-        # Tracking for debug logging
-        debug_joints = [1, 2, 4, 5] 
-        
-        if not self.audit_done:
-            print("\n" + "="*50)
-            print("          ROBOT STARTUP SERVO AUDIT")
-            print("="*50)
-
         for i in range(12): 
             try:
                 zero_degrees_pulse_width = self.servo_parameters['zero_degrees_pulse_width'][i]
@@ -55,7 +47,7 @@ class ServoController():
                 # Incoming angle in radians (Standard ROS convention)
                 angle_deg = servo_angles[i] * (180.0 / pi)
 
-                # 1. Apply Home Offset
+                # 1. Apply Home Offset (maps Stand pose to calibrated 0°)
                 home_offset = 0.0
                 if 'home_angle_offset' in self.servo_parameters:
                     home_offset = self.servo_parameters['home_angle_offset'][i]
@@ -67,23 +59,17 @@ class ServoController():
                 if invert_direction:
                     final_angle = -offset_adjusted_angle
 
-                # 3. Clamp
+                # 3. Clamp to mechanical limits
                 clamped_angle = self.clamp(final_angle, min_degrees, max_degrees)
                     
                 # 4. Convert to Pulse Width
                 pulse_width = (clamped_angle * pulse_width_per_degree) + zero_degrees_pulse_width
 
+                # Atomic I2C block write
                 self.servo_driver.set_pulse_width(hardware_pin, int(pulse_width))
 
-                # Startup Audit - One time report for all joints
-                if not self.audit_done:
-                    print(f"[AUDIT] Joint {i:2d} -> Pin {hardware_pin:2d} | Invert: {str(invert_direction):5s} | Angle: {angle_deg:>6.2f}° | Pulse: {int(pulse_width)}")
             except Exception as e:
-                if not self.audit_done:
-                    print(f"[ERROR] Failed to process joint {i}: {e}")
-
-        if not self.audit_done:
-            print("="*50 + "\n")
-            self.audit_done = True
+                # We keep a silent failure or minimal log for actual errors
+                pass
 
 

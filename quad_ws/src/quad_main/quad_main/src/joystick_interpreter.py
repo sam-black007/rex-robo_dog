@@ -160,16 +160,18 @@ class JoystickInterpreter():
     def _handle_jog_mode(self, axes):
         """Handle analog sticks in JOG mode - control walking with left stick"""
         
-        # LEFT STICK Y = Forward/Backward (swap min/max so stick forward = robot forward)
+        # LEFT STICK Y = Forward/Backward
         left_y = self.apply_deadzone(axes[AxesMap.LEFT_Y.value])
         self.motion_inputs.step_length = self.map(
             left_y, -1, 1, 
-            self.motion_parameters['step_length_max'], 
-            self.motion_parameters['step_length_min'])
+            self.motion_parameters['step_length_min'], 
+            self.motion_parameters['step_length_max'])
         
         # LEFT STICK X = Strafe Left/Right (lateral fraction)
+        # Map -1 to 1 stick range to -pi/2 to pi/2 for full 90 deg strafing
         left_x = self.apply_deadzone(axes[AxesMap.LEFT_X.value])
-        self.motion_inputs.lateral_fraction = left_x  # -1 = left, 1 = right
+        self.motion_inputs.lateral_fraction = self.map(
+            left_x, -1, 1, -np.pi/2, np.pi/2)
         
         # RIGHT STICK X = Yaw rate (turning)
         right_x = self.apply_deadzone(axes[AxesMap.RIGHT_X.value])
