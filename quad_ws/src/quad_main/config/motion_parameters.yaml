@@ -3,9 +3,9 @@
 
 lateral_fraction: 0.0
 step_velocity: 0.005
-swing_period: 0.200
-clearance_height: 0.060
-penetration_depth: 0.005
+swing_period: 0.180
+clearance_height: 0.080
+penetration_depth: 0.010
 
 orn_x_min: -0.393
 orn_x_max: 0.393
