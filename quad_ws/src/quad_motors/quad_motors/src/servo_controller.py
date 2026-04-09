@@ -34,6 +34,10 @@ class ServoController():
         return (max(min(num, max_val), min_val))
 
     def set_servo_angles(self, servo_angles):
+        # We only log joint 1 (FL Femur) and Joint 4 (FR Femur) to avoid log spam
+        # but keep it detailed enough to see the math.
+        debug_joints = [1, 4] 
+
         for i in range(12): 
             zero_degrees_pulse_width = self.servo_parameters['zero_degrees_pulse_width'][i]
             pulse_width_per_degree = self.servo_parameters['pulse_width_per_degree'][i]
@@ -41,23 +45,36 @@ class ServoController():
             min_degrees = self.servo_parameters['min_degrees'][i]
             max_degrees = self.servo_parameters['max_degrees'][i]
             hardware_pin = self.servo_parameters['map_joint_index_to_driver_pin'][i]
+            
+            # Incoming angle in radians (Standard ROS convention)
+            raw_radians = servo_angles[i]
+            angle_deg = raw_radians * (180.0 / pi)
 
-            angle = servo_angles[i] * (180 / pi)
-
-            # Adjust for home offset (maps stand pose to calibrated zero)
+            # 1. Apply Home Offset
+            # This maps the library's 'Stand' pose to our calibrated '0' pose.
             home_offset = 0.0
             if 'home_angle_offset' in self.servo_parameters:
                 home_offset = self.servo_parameters['home_angle_offset'][i]
             
-            angle = angle - home_offset
+            offset_adjusted_angle = angle_deg - home_offset
 
+            # 2. Apply Inversion
+            # If inverted, positive joint rotation = negative servo rotation.
+            final_angle = offset_adjusted_angle
             if invert_direction:
-                angle = -angle
+                final_angle = -offset_adjusted_angle
 
-            angle = self.clamp(angle, min_degrees, max_degrees)
+            # 3. Clamp to mechanical limits
+            clamped_angle = self.clamp(final_angle, min_degrees, max_degrees)
                 
-            pulse_width = angle * pulse_width_per_degree + zero_degrees_pulse_width
+            # 4. Convert to Pulse Width
+            pulse_width = (clamped_angle * pulse_width_per_degree) + zero_degrees_pulse_width
 
+            # Internal driver clamping for safety
             self.servo_driver.set_pulse_width(hardware_pin, int(pulse_width))
+
+            # Debug logging for selected joints
+            if i in debug_joints:
+                print(f"[DEBUG] Joint {i} Pin {hardware_pin}: Raw={angle_deg:>6.2f}° | Offset={home_offset:>6.2f}° | Invert={invert_direction} | Final={clamped_angle:>6.2f}° | Pulse={int(pulse_width)}")
 
 

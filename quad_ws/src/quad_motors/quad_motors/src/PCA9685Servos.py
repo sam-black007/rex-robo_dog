@@ -114,16 +114,26 @@ class PCA9685Servos:
             pulse_width = self.max_pulse_width
 
         reg = PCA9685_LED0_REG + (channel * 0x04)
-               
+        
+        # PCA9685 has 4096 steps in its 12-bit register.
         phase_begin = 0     
-        phase_end = int(((4016 / 20000) * pulse_width)) & PCA9685_PWM_MASK
+        phase_end = int(pulse_width * (4096.0 / 20000.0)) & 0x0FFF
 
-        try:
-            self._write_byte(reg, phase_begin & 0xFF)
-            self._write_byte(reg + 1, (phase_begin >> 8) & 0xFF)
-            self._write_byte(reg + 2, phase_end & 0xFF)
-            self._write_byte(reg + 3, (phase_end >> 8) & 0xFF)
-        except OSError:
-            # Log failure but don't necessarily crash the whole process if it's intermittent
-            pass
+        # Prepare 4 bytes for LED_ON_L, LED_ON_H, LED_OFF_L, LED_OFF_H
+        data = [
+            phase_begin & 0xFF,
+            (phase_begin >> 8) & 0xFF,
+            phase_end & 0xFF,
+            (phase_end >> 8) & 0xFF
+        ]
+
+        # Write all 4 bytes in a single atomic block to prevent jitter/partial updates
+        for i in range(3): # Retry logic
+            try:
+                self.bus.write_i2c_block_data(self.address, reg, data)
+                return
+            except OSError:
+                if i == 2:
+                    pass
+                sleep(0.001)
         
