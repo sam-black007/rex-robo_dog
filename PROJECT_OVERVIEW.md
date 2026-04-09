@@ -347,12 +347,12 @@ cd quad_ws/src/quad_motors/quad_motors/
 - **Python Version:** Python 3.10+
 
 ### Dependencies
-- **ROS2:** Humble desktop (desktop) or ros-base (RPi)
+- **ROS2:** Humble (runs in Docker on RPi; native on desktop)
 - **Python:** numpy, yaml, rclpy
-- **Hardware:** smbus2 (for I2C on RPi)
+- **Hardware:** smbus2 (for I2C in container)
 - **Simulation:** pybullet, gym (desktop only)
-- **Bluetooth:** pi-bluetooth (RPi for wireless controller)
-- **OS:** Ubuntu 22.04 LTS (required for Humble)
+- **Bluetooth:** pi-bluetooth (on host for wireless controller)
+- **Host OS (RPi):** Raspberry Pi OS (64-bit); ROS2 runs in Ubuntu 22.04 Docker container for easy replication
 
 ### Communication
 - **Topics:**

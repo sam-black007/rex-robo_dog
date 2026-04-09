@@ -41,7 +41,7 @@ Video: Sydney meets Zuko |
 
 ### General
 
-Zuko uses the ROS2 framework for communication, launching, and 3rd party addons. Zuko uses a Rasberry Pi 4 with a custom expansion board for motor and peripheral control via a Playstation 4 controller.
+Zuko uses the ROS2 framework for communication, launching, and 3rd party addons. It runs on a **Raspberry Pi 4** with **Raspberry Pi OS** as the host; **ROS2 Humble runs in a Docker container** (Ubuntu 22.04) for minimal, repeatable setup. A custom expansion board (PCA9685) drives the motors; control is via a PS4/PS5 controller.
 
 ### Current Major Tasks 
 
@@ -53,9 +53,29 @@ Zuko uses the ROS2 framework for communication, launching, and 3rd party addons.
 - Create print time/weight sheet
 - Create how to documentation for end user
 
+### Quick setup (Raspberry Pi)
+
+1. **Install Raspberry Pi OS (Bookworm, 64-bit)** and enable I2C.
+2. **Install Docker (Bookworm):**
+   ```bash
+   sudo apt update
+   curl -fsSL https://get.docker.com | sh
+   sudo usermod -aG docker $USER
+   sudo apt install -y docker-compose-plugin
+   ```
+3. **Clone and run:**
+   ```bash
+   git clone --filter=blob:none --sparse https://github.com/MrTheMech/rex-zuko-try.git
+   cd rex-zuko-try && git sparse-checkout set quad_ws docs scripts docker
+   docker compose -f docker/docker-compose.yml build
+   docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
+   docker compose -f docker/docker-compose.yml run --rm zuko-ros2
+   ```
+4. See **INSTALL_RPI.md** and **ROBOT_SETUP_GUIDE.md** for hardware wiring, calibration, and controller setup.
+
 ### ROS2 Workspace 
 
-ROS2 source code is contained the quad_ws directory.
+ROS2 source code is in the **quad_ws** directory. On the Pi it runs inside the **docker** container; see **docker/README.md**.
 
 ### My contributions
 - Frame redesign using larger servos, providing more space for electronics, rework of the leg/hip system, and addition of aesthetic features (tail, etc).

@@ -1,4 +1,9 @@
-General instructions to setup Ubuntu, and ROS2 on Desktop and RPi.
+General instructions to setup ROS2 on Desktop and RPi.
+
+RECOMMENDED ON RPi: Raspberry Pi OS + Docker (ROS2 in container).
+	See INSTALL_RPI.md for full steps. Quick: Pi OS → enable I2C → install Docker → clone repo → docker compose -f docker/docker-compose.yml build → build workspace in container → run.
+
+LEGACY / ALTERNATIVE: Native Ubuntu 22.04 on RPi (no Docker).
 
 Install Ubuntu 22.04 LTS and setup Wi-Fi:
 	RPi:

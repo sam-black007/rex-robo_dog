@@ -49,71 +49,50 @@ Before starting, ensure you have:
 
 **Note:** The pin mapping is already configured in the software. Just ensure your physical wiring matches the table above.
 
-## Step 2: Software Installation
+## Step 2: Software Installation (Raspberry Pi OS + Docker)
 
-Follow the **INSTALL_RPI.md** guide for complete software installation. Quick summary:
+The recommended setup is **Raspberry Pi OS** on the Pi with **ROS2 Humble in Docker**. Full steps are in **INSTALL_RPI.md**. Summary:
 
-### 2.1 Install Ubuntu 22.04 LTS
-- Use Raspberry Pi Imager
-- Download Ubuntu 22.04 LTS Server 64-bit
-- Default credentials: `ubuntu`/`ubuntu` (change immediately!)
+### 2.1 Install Raspberry Pi OS
+- Use Raspberry Pi Imager; choose **Raspberry Pi OS (64-bit)**.
+- Boot, complete setup, then: `sudo apt update && sudo apt upgrade -y`.
 
-### 2.2 Install ROS2 Humble
+### 2.2 Enable I2C and Install Docker
 ```bash
+sudo raspi-config
+# Interfacing Options → I2C → Enable, then reboot
+
 sudo apt update
-sudo apt upgrade -y
-# Follow ROS2 Humble installation steps from INSTALL_RPI.md
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+sudo apt install -y docker-compose-plugin
+# Log out and back in (or reboot) so docker group + compose plugin are active
 ```
 
-### 2.3 Clone and Build Repository
-
-**Option 1: Sparse Clone (Recommended - saves space):**
+### 2.3 Clone Repository
 ```bash
 cd ~
 git clone --filter=blob:none --sparse https://github.com/MrTheMech/rex-zuko-try.git
 cd rex-zuko-try
-git sparse-checkout set quad_ws docs scripts
-cd quad_ws
-source /opt/ros/humble/setup.bash
-colcon build
-source install/local_setup.bash
+git sparse-checkout set quad_ws docs scripts docker
 ```
 
-**Option 2: Full Clone:**
+Or full clone: `git clone https://github.com/MrTheMech/rex-zuko-try.git`
+
+### 2.4 Build Docker Image and ROS2 Workspace
+From repo root (`rex-zuko-try`):
 ```bash
-cd ~
-git clone https://github.com/MrTheMech/rex-zuko-try.git
-cd rex-zuko-try/quad_ws
-source /opt/ros/humble/setup.bash
-colcon build
-source install/local_setup.bash
+docker compose -f docker/docker-compose.yml build
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
 ```
 
-**Note:** Sparse clone only downloads:
-- `quad_ws/` - ROS2 workspace (required)
-- `docs/` - Documentation (useful)
-- `scripts/` - Kinematics scripts (optional)
-
-This saves significant space by excluding CAD files, PCB designs, images, and videos.
-
-### 2.4 Install Dependencies
-```bash
-pip3 install smbus2 numpy pyyaml
-sudo apt install python3-colcon-common-extensions i2c-tools -y
-```
-
-### 2.5 Configure I2C
-```bash
-sudo raspi-config
-# Navigate to: Interfacing Options → I2C → Enable
-echo "sudo chmod a+rw /dev/i2c-*" >> ~/.bashrc
-```
-
-### 2.6 Verify I2C Connection
+### 2.5 Verify I2C (on host)
 ```bash
 sudo i2cdetect -y 1
 # Should show PCA9685 at address 0x40
 ```
+
+For detailed steps, Bluetooth, and troubleshooting, see **INSTALL_RPI.md**.
 
 ## Step 3: Servo Calibration (DS3218SSG Pro)
 
@@ -124,14 +103,20 @@ sudo i2cdetect -y 1
 - [ ] Ensure servos are free to move without hitting mechanical limits
 - [ ] Have servo power supply ready (ensure adequate current for 12 servos)
 
-### 3.2 Run Enhanced Calibration Tool (Recommended)
+### 3.2 Run Calibration (Docker setup)
 
-The v2 calibration tool provides degree-based movement and visual feedback:
+From the **repo root** on the Pi:
+```bash
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && chmod +x servo_calibration.py && ./servo_calibration.py"
+```
+
+Calibration saves to `quad_ws/src/quad_motors/config/servo_parameters.yaml` on the host.
+
+**Optional – v2 calibration tool** (if present) for degree-based movement:
 
 ```bash
-cd ~/rex-zuko-try/quad_ws/src/quad_motors/quad_motors/
-chmod +x servo_calibration_v2.py
-./servo_calibration_v2.py
+cd ~/rex-zuko-try
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "cd /workspace/quad_ws/src/quad_motors/quad_motors && chmod +x servo_calibration_v2.py && ./servo_calibration_v2.py"
 ```
 
 ### 3.3 Quick Calibration Process
@@ -243,18 +228,17 @@ sudo i2cdetect -y 1
 # Should show 0x40
 ```
 
-**Test Servo Communication:**
+**Test Servo Communication (Docker):**
 ```bash
-cd ~/rex-zuko-try/quad_ws/src/quad_motors/quad_motors/
-./servo_calibration.py
+cd ~/rex-zuko-try
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && ./servo_calibration.py"
 # Use "zero_all" command to set all servos to zero
 ```
 
-**Test Gamepad:**
+**Test Gamepad (Docker):**
 ```bash
-cd ~/rex-zuko-try/quad_ws
-source install/local_setup.bash
-ros2 run quad_gamepad quad_gamepad --ros-args -p joystick_number:=0
+cd ~/rex-zuko-try
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && source /workspace/quad_ws/install/setup.bash && ros2 run quad_gamepad quad_gamepad --ros-args -p joystick_number:=0"
 # In another terminal:
 ros2 topic echo /joy
 # Move controller and verify messages
@@ -262,35 +246,29 @@ ros2 topic echo /joy
 
 ### 5.3 Launch Robot (First Time)
 
-**Start with simulation to verify software:**
+**Live robot (Docker – from repo root):**
 ```bash
-cd ~/rex-zuko-try/quad_ws
-source install/local_setup.bash
-ros2 launch quad_main quad_all.launch.py
+cd ~/rex-zuko-try
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2
 ```
 
-**For live robot operation:**
+**Simulation (run inside container):**
 ```bash
-cd ~/rex-zuko-try/quad_ws
-source install/local_setup.bash
-ros2 launch quad_main quad_live.launch.py
+cd ~/rex-zuko-try
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && source /workspace/quad_ws/install/setup.bash && ros2 launch quad_main quad_all.launch.py"
 ```
 
 ### 5.4 Monitor Robot Status
 
-In a separate terminal:
+In a **second terminal**, open a shell in the same Docker setup (with `network_mode: host`, ROS2 discovery works from another container):
 ```bash
-# List all nodes
+cd ~/rex-zuko-try
+docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash
+# Inside container:
+source /opt/ros/humble/setup.bash && source /workspace/quad_ws/install/setup.bash
 ros2 node list
-
-# Monitor joint angles
 ros2 topic echo /joint_angles
-
-# Monitor gamepad input
 ros2 topic echo /joy
-
-# View node graph
-rqt_graph
 ```
 
 ## Step 6: Tuning and Optimization
