@@ -93,14 +93,14 @@ zero_degrees_pulse_width:
 # These ensure that standing pose = 0° for the calibrated servos
 home_angle_offset:
 - 0.00   # 0: FL Hip
-- 0.00   # 1: FL Femur
-- 0.00   # 2: FL Tibia
+- 21.43  # 1: FL Femur
+- 49.20  # 2: FL Tibia
 - 0.00   # 3: FR Hip
 - 21.43  # 4: FR Femur
 - 49.20  # 5: FR Tibia
 - 0.00   # 6: BL Hip
-- 0.00   # 7: BL Femur
-- 0.00   # 8: BL Tibia
+- 21.43  # 7: BL Femur
+- 49.20  # 8: BL Tibia
 - 0.00   # 9: BR Hip
 - 21.43  # 10: BR Femur
 - 49.20  # 11: BR Tibia
