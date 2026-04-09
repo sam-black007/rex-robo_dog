@@ -44,6 +44,13 @@ class ServoController():
 
             angle = servo_angles[i] * (180 / pi)
 
+            # Adjust for home offset (maps stand pose to calibrated zero)
+            home_offset = 0.0
+            if 'home_angle_offset' in self.servo_parameters:
+                home_offset = self.servo_parameters['home_angle_offset'][i]
+            
+            angle = angle - home_offset
+
             if invert_direction:
                 angle = -angle
 
