@@ -74,7 +74,7 @@ class DingoGait():
                 stance_progress = leg_phase / stance_proportion
                 
                 # Move foot from +L (front) to -L (back)
-                step = L * (1.0 - 2.0 * stance_progress)
+                step = L * (2.0 * stance_progress - 1.0)
                 
                 # Apply Straits/Strafing Angle
                 stepX = step * np.cos(LateralFraction)
@@ -89,7 +89,7 @@ class DingoGait():
                 swing_progress = (leg_phase - stance_proportion) / (1.0 - stance_proportion)
                 
                 # Move foot from -L (back) to +L (front)
-                step = L * (-1.0 + 2.0 * swing_progress)
+                step = L * (1.0 - 2.0 * swing_progress)
                 
                 stepX = step * np.cos(LateralFraction)
                 stepY = step * np.sin(LateralFraction)
@@ -105,9 +105,9 @@ class DingoGait():
                 
                 # Apply Yaw Sweep
                 if leg_phase < stance_proportion:
-                    yaw_step = YawRate * (1.0 - 2.0 * stance_progress)
+                    yaw_step = YawRate * (2.0 * stance_progress - 1.0)
                 else:
-                    yaw_step = YawRate * (-1.0 + 2.0 * swing_progress)
+                    yaw_step = YawRate * (1.0 - 2.0 * swing_progress)
                 
                 # Calculate required foot delta to achieve this body rotation
                 new_x = r * np.cos(angle + yaw_step) - p_bf[0]
