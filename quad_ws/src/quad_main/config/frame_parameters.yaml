@@ -24,7 +24,8 @@ foot_x: 0.238
 foot_y: 0.1545 # adjustment to have feet directly below hips (hips orientate to zero degrees when standing)
 
 # how high center of body is off the ground
-height: 0.195
+# Reduced from 0.195 to 0.155 to give the knees a deeper bend for massive torque
+height: 0.155
 
 # foot under upper leg servo offset (due to upper leg servos being shifted back in the CAD)
 com_offset: 0.0105
