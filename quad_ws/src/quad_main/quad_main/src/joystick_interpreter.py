@@ -66,6 +66,9 @@ class JoystickInterpreter():
         
         # Track current mode index for L1 cycling
         self.current_mode_index = 0
+        
+        # For debugging inputs
+        self.last_debug_state = ""
 
     def map(self, n, in_min, in_max, out_min, out_max):
         """Map a value from one range to another"""
@@ -222,6 +225,14 @@ class JoystickInterpreter():
             axes[AxesMap.DPAD_Y.value] = -axes[AxesMap.DPAD_Y.value]
         if len(axes) > 17:
             axes[17] = -axes[17]
+            
+        # Debugging: Print state when it changes
+        pressed_buttons = [i for i, b in enumerate(buttons) if b]
+        active_axes = {i: round(a, 2) for i, a in enumerate(axes) if abs(a) > 0.1}
+        current_debug_state = f"Axes: {active_axes} | Buttons: {pressed_buttons}"
+        if current_debug_state != self.last_debug_state:
+            print(f"[DEBUG INPUT] {current_debug_state}")
+            self.last_debug_state = current_debug_state
         
         # Handle mode selection buttons
         self._handle_mode_buttons(buttons)
