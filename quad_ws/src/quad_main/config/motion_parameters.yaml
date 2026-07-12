@@ -3,7 +3,7 @@
 
 lateral_fraction: 0.0
 step_velocity: 0.005
-swing_period: 0.180
+swing_period: 0.220
 clearance_height: 0.035
 penetration_depth: 0.010
 
@@ -24,5 +24,5 @@ pos_z_max: 0.070
 yaw_rate_min: -0.785
 yaw_rate_max:  0.785
 
-step_length_min: -0.050
-step_length_max: 0.050
+step_length_min: -0.025
+step_length_max: 0.025
