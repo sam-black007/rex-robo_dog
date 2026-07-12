@@ -164,39 +164,36 @@ class JoystickInterpreter():
             self.motion_parameters['pos_z_max'])
 
     def _handle_jog_mode(self, axes, buttons):
-        """Handle D-pad in JOG mode - control walking with D-pad"""
+        """Handle JOG mode - constrained orthogonal walking with Left Stick"""
         
-        # D-PAD Default (PS4 / Standard axes 6 and 7)
-        dpad_y = axes[AxesMap.DPAD_Y.value] if len(axes) > AxesMap.DPAD_Y.value else 0.0
-        dpad_x = axes[AxesMap.DPAD_X.value] if len(axes) > AxesMap.DPAD_X.value else 0.0
+        # Use Left Stick for movement instead of D-pad due to driver issues
+        joy_x = self.apply_deadzone(axes[AxesMap.LEFT_X.value])
+        joy_y = self.apply_deadzone(axes[AxesMap.LEFT_Y.value])
         
-        # Check for PS5 D-pad axes (often mapped to 16 and 17 on Linux)
-        if len(axes) > 17:
-            if abs(axes[16]) > 0.01 or abs(axes[17]) > 0.01:
-                dpad_x = axes[16]
-                dpad_y = axes[17]
-                
-        # Check for D-pad mapped as buttons (often 11 to 14)
-        if len(buttons) > 14:
-            if buttons[11]: dpad_y = 1.0  # Up
-            elif buttons[12]: dpad_y = -1.0 # Down
+        step_length = 0.0
+        lateral_fraction = 0.0
+        
+        # Strict Orthogonal Movement (only allow pure Forward/Back OR Left/Right)
+        if abs(joy_y) > abs(joy_x):
+            # Forward / Backward dominant
+            step_length = self.map(
+                joy_y, -1, 1, 
+                self.motion_parameters['step_length_min'], 
+                self.motion_parameters['step_length_max'])
+            lateral_fraction = 0.0
+        elif abs(joy_x) > abs(joy_y):
+            # Left / Right dominant
+            # We use absolute value for step_length so the gait cycle moves
+            step_length = abs(joy_x) * self.motion_parameters['step_length_max']
             
-            if buttons[13]: dpad_x = -1.0 # Left
-            elif buttons[14]: dpad_x = 1.0  # Right
-
-        # D-pad UP maps to step_length_max (positive)
-        # D-pad DOWN maps to step_length_min (negative)
-        dpad_y = self.apply_deadzone(dpad_y)
-        self.motion_inputs.step_length = self.map(
-            dpad_y, -1, 1, 
-            self.motion_parameters['step_length_min'], 
-            self.motion_parameters['step_length_max'])
-        
-        # D-PAD X = Strafe Left/Right (lateral fraction)
-        # Map -1 to 1 D-pad range to -pi/2 to pi/2 for full 90 deg strafing
-        dpad_x = self.apply_deadzone(dpad_x)
-        self.motion_inputs.lateral_fraction = self.map(
-            dpad_x, -1, 1, -np.pi/2, np.pi/2)
+            # Set the angle to strafe
+            if joy_x < 0:
+                lateral_fraction = np.pi / 2.0  # Strafe Left (positive Y)
+            else:
+                lateral_fraction = -np.pi / 2.0 # Strafe Right (negative Y)
+                
+        self.motion_inputs.step_length = step_length
+        self.motion_inputs.lateral_fraction = lateral_fraction
         
         # RIGHT STICK X = Yaw rate (turning)
         right_x = self.apply_deadzone(axes[AxesMap.RIGHT_X.value])
