@@ -24,5 +24,5 @@ pos_z_max: 0.070
 yaw_rate_min: -0.785
 yaw_rate_max:  0.785
 
-step_length_min: -0.025
-step_length_max: 0.025
+step_length_min: -0.031
+step_length_max: 0.031
