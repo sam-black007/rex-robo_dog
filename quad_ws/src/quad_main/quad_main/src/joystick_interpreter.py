@@ -7,9 +7,12 @@
     CONTROL SCHEME:
     ===============
     
-    LEFT ANALOG STICK (Movement - JOG Mode):
+    D-PAD (Movement - JOG Mode):
         Up/Down   = Walk Forward/Backward
         Left/Right = Strafe Left/Right
+    
+    LEFT ANALOG STICK:
+        (Reserved / Unused for movement)
     
     RIGHT ANALOG STICK (Always Active):
         X-axis = Turn rate (yaw) while walking
@@ -158,22 +161,22 @@ class JoystickInterpreter():
             self.motion_parameters['pos_z_max'])
 
     def _handle_jog_mode(self, axes):
-        """Handle analog sticks in JOG mode - control walking with left stick"""
+        """Handle D-pad in JOG mode - control walking with D-pad"""
         
-        # LEFT STICK Y = Forward/Backward
-        # Stick UP (axes=1) maps to step_length_max (positive)
-        # Stick DOWN (axes=-1) maps to step_length_min (negative)
-        left_y = self.apply_deadzone(axes[AxesMap.LEFT_Y.value])
+        # D-PAD Y = Forward/Backward
+        # D-pad UP maps to step_length_max (positive)
+        # D-pad DOWN maps to step_length_min (negative)
+        dpad_y = self.apply_deadzone(axes[AxesMap.DPAD_Y.value])
         self.motion_inputs.step_length = self.map(
-            left_y, -1, 1, 
+            dpad_y, -1, 1, 
             self.motion_parameters['step_length_min'], 
             self.motion_parameters['step_length_max'])
         
-        # LEFT STICK X = Strafe Left/Right (lateral fraction)
-        # Map -1 to 1 stick range to -pi/2 to pi/2 for full 90 deg strafing
-        left_x = self.apply_deadzone(axes[AxesMap.LEFT_X.value])
+        # D-PAD X = Strafe Left/Right (lateral fraction)
+        # Map -1 to 1 D-pad range to -pi/2 to pi/2 for full 90 deg strafing
+        dpad_x = self.apply_deadzone(axes[AxesMap.DPAD_X.value])
         self.motion_inputs.lateral_fraction = self.map(
-            left_x, -1, 1, -np.pi/2, np.pi/2)
+            dpad_x, -1, 1, -np.pi/2, np.pi/2)
         
         # RIGHT STICK X = Yaw rate (turning)
         right_x = self.apply_deadzone(axes[AxesMap.RIGHT_X.value])
