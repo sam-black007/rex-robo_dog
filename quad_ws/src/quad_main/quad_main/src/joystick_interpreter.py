@@ -160,13 +160,30 @@ class JoystickInterpreter():
             self.motion_parameters['pos_z_min'], 
             self.motion_parameters['pos_z_max'])
 
-    def _handle_jog_mode(self, axes):
+    def _handle_jog_mode(self, axes, buttons):
         """Handle D-pad in JOG mode - control walking with D-pad"""
         
-        # D-PAD Y = Forward/Backward
+        # D-PAD Default (PS4 / Standard axes 6 and 7)
+        dpad_y = axes[AxesMap.DPAD_Y.value] if len(axes) > AxesMap.DPAD_Y.value else 0.0
+        dpad_x = axes[AxesMap.DPAD_X.value] if len(axes) > AxesMap.DPAD_X.value else 0.0
+        
+        # Check for PS5 D-pad axes (often mapped to 16 and 17 on Linux)
+        if len(axes) > 17:
+            if abs(axes[16]) > 0.01 or abs(axes[17]) > 0.01:
+                dpad_x = axes[16]
+                dpad_y = axes[17]
+                
+        # Check for D-pad mapped as buttons (often 11 to 14)
+        if len(buttons) > 14:
+            if buttons[11]: dpad_y = 1.0  # Up
+            elif buttons[12]: dpad_y = -1.0 # Down
+            
+            if buttons[13]: dpad_x = -1.0 # Left
+            elif buttons[14]: dpad_x = 1.0  # Right
+
         # D-pad UP maps to step_length_max (positive)
         # D-pad DOWN maps to step_length_min (negative)
-        dpad_y = self.apply_deadzone(axes[AxesMap.DPAD_Y.value])
+        dpad_y = self.apply_deadzone(dpad_y)
         self.motion_inputs.step_length = self.map(
             dpad_y, -1, 1, 
             self.motion_parameters['step_length_min'], 
@@ -174,7 +191,7 @@ class JoystickInterpreter():
         
         # D-PAD X = Strafe Left/Right (lateral fraction)
         # Map -1 to 1 D-pad range to -pi/2 to pi/2 for full 90 deg strafing
-        dpad_x = self.apply_deadzone(axes[AxesMap.DPAD_X.value])
+        dpad_x = self.apply_deadzone(dpad_x)
         self.motion_inputs.lateral_fraction = self.map(
             dpad_x, -1, 1, -np.pi/2, np.pi/2)
         
@@ -200,6 +217,12 @@ class JoystickInterpreter():
         axes[AxesMap.LEFT_Y.value] = -axes[AxesMap.LEFT_Y.value]
         axes[AxesMap.RIGHT_Y.value] = -axes[AxesMap.RIGHT_Y.value]
         
+        # Invert D-pad Y axes so Up is positive
+        if len(axes) > AxesMap.DPAD_Y.value:
+            axes[AxesMap.DPAD_Y.value] = -axes[AxesMap.DPAD_Y.value]
+        if len(axes) > 17:
+            axes[17] = -axes[17]
+        
         # Handle mode selection buttons
         self._handle_mode_buttons(buttons)
         
@@ -207,7 +230,7 @@ class JoystickInterpreter():
         if self.motion_inputs.motion_state == MotionState.POSE:
             self._handle_pose_mode(axes)
         elif self.motion_inputs.motion_state == MotionState.JOG:
-            self._handle_jog_mode(axes)
+            self._handle_jog_mode(axes, buttons)
         elif self.motion_inputs.motion_state == MotionState.STAND:
             # In STAND mode, reset orientation to neutral
             self.motion_inputs.orn = np.array([0.0, 0.0, 0.0])

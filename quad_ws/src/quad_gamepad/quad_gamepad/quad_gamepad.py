@@ -35,8 +35,8 @@ class GamepadPublisher(Node):
         self.joy = Joy()
         self.joy.header = Header()
         self.joy.header.frame_id = ''
-        self.joy.axes = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.joy.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.joy.axes = [0.0] * 20
+        self.joy.buttons = [0] * 20
         
         # Joy node
         self.publish_rate_ms = 10
@@ -53,8 +53,8 @@ class GamepadPublisher(Node):
 
     def run(self):     
         gamepadType = Gamepad.PS4
-        num_axes = 8
-        num_buttons = 13
+        num_axes = 20
+        num_buttons = 20
         poll_interval_seconds = self.publish_rate_ms / 1000
 
         # Wait for a connection      
@@ -71,13 +71,19 @@ class GamepadPublisher(Node):
             while gamepad.isConnected() and rclpy.ok():
                
                 for i in range (num_axes):
-                    self.joy.axes[i] = gamepad.axis(i)  
+                    try:
+                        self.joy.axes[i] = gamepad.axis(i)  
+                    except ValueError:
+                        pass
                 
                 for i in range (num_buttons):
-                    if gamepad.beenPressed(i):                   
-                        self.joy.buttons[i] = 1                                             
-                    if gamepad.beenReleased(i):                   
-                        self.joy.buttons[i] = 0                  
+                    try:
+                        if gamepad.beenPressed(i):                   
+                            self.joy.buttons[i] = 1                                             
+                        if gamepad.beenReleased(i):                   
+                            self.joy.buttons[i] = 0                  
+                    except ValueError:
+                        pass
                              
                 self.publish_joy()
                 time.sleep(poll_interval_seconds)
