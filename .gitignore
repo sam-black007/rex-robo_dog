@@ -1,3 +1,10 @@
 mini-mini/
 inspiration/
 *.ods#
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+log/
+install/
+build/

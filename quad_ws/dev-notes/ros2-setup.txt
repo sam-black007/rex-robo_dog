@@ -1,7 +1,7 @@
 General instructions to setup ROS2 on Desktop and RPi.
 
 RECOMMENDED ON RPi: Raspberry Pi OS + Docker (ROS2 in container).
-	See INSTALL_RPI.md for full steps. Quick: Pi OS → enable I2C → install Docker → clone repo → docker compose -f docker/docker-compose.yml build → build workspace in container → run.
+	See the main README.md for full steps. Quick: Pi OS → enable I2C → install Docker → clone repo → docker compose -f docker/docker-compose.yml build → build workspace in container → run.
 
 LEGACY / ALTERNATIVE: Native Ubuntu 22.04 on RPi (no Docker).
 
@@ -41,7 +41,7 @@ Tip:
 Install ROS2 Humble:
 	RPi:
 		Follow official ROS2 Humble installation guide for Raspberry Pi
-		See INSTALL_RPI.md for detailed steps
+		See the main README.md for detailed steps
 	Desktop:
 		Follow official ROS2 Humble installation guide
 		Instead of installing ros-base install the desktop version:		

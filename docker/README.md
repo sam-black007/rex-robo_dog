@@ -68,4 +68,4 @@ Calibration runs inside the container with access to I2C:
 docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && ./servo_calibration.py"
 ```
 
-See **INSTALL_RPI.md** and **ROBOT_SETUP_GUIDE.md** for full setup (Pi OS, Docker install, clone, build, run).
+See the main **README.md** for full setup (Pi OS, Docker install, clone, build, run).
