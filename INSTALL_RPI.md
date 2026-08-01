@@ -10,7 +10,7 @@ This guide sets up the Zuko quadruped on **Raspberry Pi OS** with **ROS2 Humble 
 
 ## Prerequisites
 
-- Raspberry Pi 4 (4GB or 8GB recommended)
+- Raspberry Pi 4 (4GB or 8GB recommended) or Raspberry Pi 5
 - MicroSD card (32GB or larger, Class 10)
 - USB-C power supply (5V, 3A minimum)
 - Network connection (Ethernet or Wi-Fi)
@@ -86,16 +86,16 @@ From your home directory:
 **Option A – Sparse clone (recommended):**
 ```bash
 cd ~
-git clone --filter=blob:none --sparse https://github.com/MrTheMech/rex-zuko-try.git
-cd rex-zuko-try
+git clone --filter=blob:none --sparse https://github.com/sam-black007/zuko-robo-dog.git
+cd zuko-robo-dog
 git sparse-checkout set quad_ws docs scripts docker
 ```
 
 **Option B – Full clone:**
 ```bash
 cd ~
-git clone https://github.com/MrTheMech/rex-zuko-try.git
-cd rex-zuko-try
+git clone https://github.com/sam-black007/zuko-robo-dog.git
+cd zuko-robo-dog
 ```
 
 ---

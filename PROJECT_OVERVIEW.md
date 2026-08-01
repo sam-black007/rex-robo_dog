@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Zuko** is a quadruped robot dog project built using ROS2, featuring a Raspberry Pi 4 with custom expansion boards for motor and peripheral control. The robot uses a Playstation 4 controller for teleoperation and implements advanced inverse kinematics for a linked-leg system.
+**Zuko** is a quadruped robot dog project built using ROS2, featuring a Raspberry Pi 4/5 (upgraded from Raspberry Pi 3) with custom expansion boards for motor and peripheral control. The robot uses a Playstation 4 controller for teleoperation and implements advanced inverse kinematics for a linked-leg system.
 
 ## Project Status
 
@@ -273,7 +273,7 @@ Per-servo calibration data:
 ### Building the Workspace
 ```bash
 cd quad_ws
-source /opt/ros/foxy/setup.bash
+source /opt/ros/humble/setup.bash
 colcon build
 source install/local_setup.bash
 ```
@@ -319,6 +319,7 @@ cd quad_ws/src/quad_motors/quad_motors/
 ## Key Contributions
 
 - Frame redesign with larger servos and improved leg/hip system
+- Hardware upgrade from Raspberry Pi 3 to Raspberry Pi 4/5
 - Migration from ROS1 to ROS2
 - Inverse kinematics for linked-leg quadruped system
 - Parameterized hard-coded values

@@ -41,7 +41,14 @@ Video: Sydney meets Zuko |
 
 ### General
 
-Zuko uses the ROS2 framework for communication, launching, and 3rd party addons. It runs on a **Raspberry Pi 4** with **Raspberry Pi OS** as the host; **ROS2 Humble runs in a Docker container** (Ubuntu 22.04) for minimal, repeatable setup. A custom expansion board (PCA9685) drives the motors; control is via a PS4/PS5 controller.
+Zuko uses the ROS2 framework for communication, launching, and 3rd party addons. It runs on a **Raspberry Pi 4 or 5** with **Raspberry Pi OS** as the host; **ROS2 Humble runs in a Docker container** (Ubuntu 22.04) for minimal, repeatable setup. A custom expansion board (PCA9685) drives the motors; control is via a PS4/PS5 controller.
+
+### Upgrades
+
+This repository is an upgraded version of the original Rex/Zuko quadruped project:
+
+- **Hardware:** Upgraded from **Raspberry Pi 3** to **Raspberry Pi 4/5**.
+- **Software:** Migrated from **ROS1 to ROS2**, and upgraded **ROS2 Foxy to ROS2 Humble**. See `UPGRADE_COMPLETE.md` and `FOXY_TO_HUMBLE_UPGRADE_ASSESSMENT.md` for details.
 
 ### Current Major Tasks 
 
@@ -65,7 +72,7 @@ Zuko uses the ROS2 framework for communication, launching, and 3rd party addons.
    ```
 3. **Clone and run:**
    ```bash
-   git clone --filter=blob:none --sparse https://github.com/MrTheMech/rex-zuko-try.git
+   git clone --filter=blob:none --sparse https://github.com/sam-black007/zuko-robo-dog.git
    cd rex-zuko-try && git sparse-checkout set quad_ws docs scripts docker
    docker compose -f docker/docker-compose.yml build
    docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
@@ -90,6 +97,10 @@ ROS2 source code is in the **quad_ws** directory. On the Pi it runs inside the *
 - Simulation, kinematics, bezier curves, and machine learning are largely based on the work from Spot Mini Mini: https://github.com/OpenQuadruped/spot_mini_mini 
 - Spot Mini Mini is based on SpotMicroAI: https://spotmicroai.readthedocs.io/en/latest/
 - Frame and leg linkage design inspired by Baris Alp's Kangel robot dog: https://grabcad.com/library/diy-quadruped-robot-1
+
+### License
+
+This project is released under the **MIT License**. The simulation, kinematics, bezier curves, and machine learning are largely based on **spot_mini_mini** (MIT, © 2020 Maurice Rahme). See [LICENSE](LICENSE) for the full text.
 
 ### Communities
 - SpotMicroAI Discord: https://discord.gg/m5fsENhT

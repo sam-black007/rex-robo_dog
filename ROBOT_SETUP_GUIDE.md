@@ -72,12 +72,12 @@ sudo apt install -y docker-compose-plugin
 ### 2.3 Clone Repository
 ```bash
 cd ~
-git clone --filter=blob:none --sparse https://github.com/MrTheMech/rex-zuko-try.git
-cd rex-zuko-try
+git clone --filter=blob:none --sparse https://github.com/sam-black007/zuko-robo-dog.git
+cd zuko-robo-dog
 git sparse-checkout set quad_ws docs scripts docker
 ```
 
-Or full clone: `git clone https://github.com/MrTheMech/rex-zuko-try.git`
+Or full clone: `git clone https://github.com/sam-black007/zuko-robo-dog.git`
 
 ### 2.4 Build Docker Image and ROS2 Workspace
 From repo root (`rex-zuko-try`):
