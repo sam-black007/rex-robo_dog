@@ -8,9 +8,7 @@
 
 See rex-robo_dog in action below:
 
-<video src="assets/walking.mp4" autoplay loop muted playsinline width="100%">
-  Your browser does not support the video tag.
-</video>
+![rex-robo_dog walking](assets/walking.gif)
 
 > Add your own walking video: place an MP4 (or GIF) file at `assets/walking.mp4` and it will appear here automatically.
 
@@ -36,8 +34,8 @@ This repository is an upgraded version of the original Rex/Zuko quadruped projec
 
 ```
 rex-robo_dog/
-├── assets/                 # Media (walking video, photos, etc.)
-│   └── walking.mp4         # Walking demo video (add your own)
+├── assets/                 # Media (walking video/GIF, photos, etc.)
+│   └── walking.gif         # Walking demo GIF (plays inline on the README)
 ├── quad_ws/                # ROS2 workspace (main codebase)
 │   └── src/
 │       ├── quad_main/        # Main control: kinematics, gaits, commander
