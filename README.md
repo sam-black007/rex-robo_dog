@@ -8,7 +8,7 @@
 
 See rex-robo_dog in action below:
 
-<video src="assets/walking.mp4" controls width="100%">
+<video src="assets/walking.mp4" autoplay loop muted playsinline width="100%">
   Your browser does not support the video tag.
 </video>
 
