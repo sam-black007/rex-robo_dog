@@ -8,9 +8,15 @@
 
 See rex-robo_dog in action below:
 
-![rex-robo_dog walking](assets/walking.gif)
+| Walking demo 1 | Walking demo 2 |
+|:---:|:---:|
+| ![rex-robo_dog walking](assets/walking.gif) | ![rex-robo_dog walking 2](assets/walking-2.gif) |
 
-> Add your own walking video: place an MP4 (or GIF) file at `assets/walking.mp4` and it will appear here automatically.
+| Walking demo 3 | Walking demo 4 |
+|:---:|:---:|
+| ![rex-robo_dog walking 3](assets/walking-3.gif) | ![rex-robo_dog walking 4](assets/walking-4.gif) |
+
+> Add your own walking video: place an MP4 file at `assets/walking-N.mp4` and a GIF version will display on the README.
 
 ## Upgrades
 
@@ -34,8 +40,11 @@ This repository is an upgraded version of the original Rex/Zuko quadruped projec
 
 ```
 rex-robo_dog/
-├── assets/                 # Media (walking video/GIF, photos, etc.)
-│   └── walking.gif         # Walking demo GIF (plays inline on the README)
+├── assets/                 # Media (walking video/GIFs, photos, etc.)
+│   ├── walking.gif         # Walking demo GIF 1 (plays inline on the README)
+│   ├── walking-2.gif       # Walking demo GIF 2
+│   ├── walking-3.gif       # Walking demo GIF 3
+│   └── walking-4.gif       # Walking demo GIF 4
 ├── quad_ws/                # ROS2 workspace (main codebase)
 │   └── src/
 │       ├── quad_main/        # Main control: kinematics, gaits, commander
