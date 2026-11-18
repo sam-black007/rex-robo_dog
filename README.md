@@ -1,8 +1,16 @@
-# Zuko - A Quadruped Robot Dog
+# rex - A Quadruped Robot Dog
 
-**Zuko** is a 12-DOF quadruped robot dog built on **ROS2 Humble** and running on a **Raspberry Pi 4/5** with Raspberry Pi OS as the host. ROS2 runs inside a **Docker container** (Ubuntu 22.04) for a minimal, repeatable setup. Control is via a **PS4/PS5 controller**.
+**rex** is a 12-DOF quadruped robot dog built on **ROS2 Humble** and running on a **Raspberry Pi 4/5** with Raspberry Pi OS as the host. ROS2 runs inside a **Docker container** (Ubuntu 22.04) for a minimal, repeatable setup. Control is via a **PS4/PS5 controller**.
 
 > Status: **Development** — Frame v2.2 is being tested and is nearly ready for replication.
+
+## Watch rex Walk
+
+See rex in action below:
+
+![rex walking](assets/walking.mp4)
+
+> Add your own walking video: place an MP4 (or GIF) file at `assets/walking.mp4` and it will appear here automatically.
 
 ## Upgrades
 
@@ -25,8 +33,10 @@ This repository is an upgraded version of the original Rex/Zuko quadruped projec
 ## Repository Structure
 
 ```
-zuko-robo-dog/
-├── quad_ws/                  # ROS2 workspace (main codebase)
+rex/
+├── assets/                 # Media (walking video, photos, etc.)
+│   └── walking.mp4         # Walking demo video (add your own)
+├── quad_ws/                # ROS2 workspace (main codebase)
 │   └── src/
 │       ├── quad_main/        # Main control: kinematics, gaits, commander
 │       ├── quad_motors/      # Servo control via PCA9685 + calibration
@@ -36,10 +46,10 @@ zuko-robo-dog/
 │       ├── quad_urdf/        # URDF robot description
 │       ├── quad_sensors/     # Sensor handling (IMU, foot sensors, etc.)
 │       └── quad_output/      # Peripheral output (LEDs, NeoPixels, etc.)
-├── docker/                   # Docker image, compose file, run script
-├── scripts/                  # Standalone scripts
+├── docker/                 # Docker image, compose file, run script
+├── scripts/                # Standalone scripts
 │   └── kinematics-simulation/# Forward/inverse kinematics tests
-├── LICENSE                   # MIT License
+├── LICENSE                 # MIT License
 └── README.md
 ```
 
@@ -71,10 +81,10 @@ sudo apt install -y docker-compose-plugin
 ### 3. Clone and Build
 
 ```bash
-git clone --filter=blob:none --sparse https://github.com/sam-black007/zuko-robo-dog.git
-cd zuko-robo-dog && git sparse-checkout set quad_ws docs scripts docker
+git clone --filter=blob:none --sparse https://github.com/sam-black007/rex.git
+cd rex && git sparse-checkout set quad_ws scripts docker
 docker compose -f docker/docker-compose.yml build
-docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
+docker compose -f docker/docker-compose.yml run --rm rex-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
 ```
 
 ### 4. Run
@@ -82,7 +92,7 @@ docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /
 Connect the PCA9685, servos, power, and a PS4/PS5 controller (USB or Bluetooth), then:
 
 ```bash
-docker compose -f docker/docker-compose.yml run --rm zuko-ros2
+docker compose -f docker/docker-compose.yml run --rm rex-ros2
 ```
 
 The `docker/run.sh` script sources ROS2, builds the workspace if needed, and launches `quad_main quad_live.launch.py`.
@@ -90,7 +100,7 @@ The `docker/run.sh` script sources ROS2, builds the workspace if needed, and lau
 ### 5. Servo Calibration
 
 ```bash
-docker compose -f docker/docker-compose.yml run --rm zuko-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && ./servo_calibration.py"
+docker compose -f docker/docker-compose.yml run --rm rex-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && ./servo_calibration.py"
 ```
 
 Calibration results are written to `quad_ws/src/quad_motors/config/servo_parameters.yaml` (persisted on the host).
@@ -134,3 +144,11 @@ The simulation, kinematics, Bezier curves, and machine learning are largely base
 
 - SpotMicroAI Discord: https://discord.gg/m5fsENhT
 - Quadrupedalism: https://quadrupedalism.com/
+
+## About
+
+rex - a 12-DOF quadruped robot dog. ROS2 Humble in Docker on a Raspberry Pi 4/5 (upgraded from Pi 3, migrated from ROS1). Joint hardware & software project.
+
+### Topics
+
+[docker](/topics/docker)[hardware](/topics/hardware)[kinematics](/topics/kinematics)[pca9685](/topics/pca9685)[quadruped](/topics/quadruped)[raspberry-pi](/topics/raspberry-pi)[robot-dog](/topics/robot-dog)[robotics](/topics/robotics)[ros2](/topics/ros2)[ros2-humble](/topics/ros2-humble)[software](/topics/software)
