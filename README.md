@@ -8,7 +8,9 @@
 
 See rex-robo_dog in action below:
 
-![rex-robo_dog walking](assets/walking.mp4)
+<video src="assets/walking.mp4" controls width="100%">
+  Your browser does not support the video tag.
+</video>
 
 > Add your own walking video: place an MP4 (or GIF) file at `assets/walking.mp4` and it will appear here automatically.
 
