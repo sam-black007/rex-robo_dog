@@ -1,14 +1,14 @@
-# rex - A Quadruped Robot Dog
+# rex-robo_dog - A Quadruped Robot Dog
 
-**rex** is a 12-DOF quadruped robot dog built on **ROS2 Humble** and running on a **Raspberry Pi 4/5** with Raspberry Pi OS as the host. ROS2 runs inside a **Docker container** (Ubuntu 22.04) for a minimal, repeatable setup. Control is via a **PS4/PS5 controller**.
+**rex-robo_dog** is a 12-DOF quadruped robot dog built on **ROS2 Humble** and running on a **Raspberry Pi 4/5** with Raspberry Pi OS as the host. ROS2 runs inside a **Docker container** (Ubuntu 22.04) for a minimal, repeatable setup. Control is via a **PS4/PS5 controller**.
 
 > Status: **Development** — Frame v2.2 is being tested and is nearly ready for replication.
 
-## Watch rex Walk
+## Watch rex-robo_dog Walk
 
-See rex in action below:
+See rex-robo_dog in action below:
 
-![rex walking](assets/walking.mp4)
+![rex-robo_dog walking](assets/walking.mp4)
 
 > Add your own walking video: place an MP4 (or GIF) file at `assets/walking.mp4` and it will appear here automatically.
 
@@ -33,7 +33,7 @@ This repository is an upgraded version of the original Rex/Zuko quadruped projec
 ## Repository Structure
 
 ```
-rex/
+rex-robo_dog/
 ├── assets/                 # Media (walking video, photos, etc.)
 │   └── walking.mp4         # Walking demo video (add your own)
 ├── quad_ws/                # ROS2 workspace (main codebase)
@@ -81,10 +81,10 @@ sudo apt install -y docker-compose-plugin
 ### 3. Clone and Build
 
 ```bash
-git clone --filter=blob:none --sparse https://github.com/sam-black007/rex.git
-cd rex && git sparse-checkout set quad_ws scripts docker
+git clone --filter=blob:none --sparse https://github.com/sam-black007/rex-robo_dog.git
+cd rex-robo_dog && git sparse-checkout set quad_ws scripts docker
 docker compose -f docker/docker-compose.yml build
-docker compose -f docker/docker-compose.yml run --rm rex-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
+docker compose -f docker/docker-compose.yml run --rm rex-robo_dog-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws && colcon build"
 ```
 
 ### 4. Run
@@ -92,7 +92,7 @@ docker compose -f docker/docker-compose.yml run --rm rex-ros2 bash -c "source /o
 Connect the PCA9685, servos, power, and a PS4/PS5 controller (USB or Bluetooth), then:
 
 ```bash
-docker compose -f docker/docker-compose.yml run --rm rex-ros2
+docker compose -f docker/docker-compose.yml run --rm rex-robo_dog-ros2
 ```
 
 The `docker/run.sh` script sources ROS2, builds the workspace if needed, and launches `quad_main quad_live.launch.py`.
@@ -100,7 +100,7 @@ The `docker/run.sh` script sources ROS2, builds the workspace if needed, and lau
 ### 5. Servo Calibration
 
 ```bash
-docker compose -f docker/docker-compose.yml run --rm rex-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && ./servo_calibration.py"
+docker compose -f docker/docker-compose.yml run --rm rex-robo_dog-ros2 bash -c "source /opt/ros/humble/setup.bash && cd /workspace/quad_ws/src/quad_motors/quad_motors && ./servo_calibration.py"
 ```
 
 Calibration results are written to `quad_ws/src/quad_motors/config/servo_parameters.yaml` (persisted on the host).
@@ -147,7 +147,7 @@ The simulation, kinematics, Bezier curves, and machine learning are largely base
 
 ## About
 
-rex - a 12-DOF quadruped robot dog. ROS2 Humble in Docker on a Raspberry Pi 4/5 (upgraded from Pi 3, migrated from ROS1). Joint hardware & software project.
+rex-robo_dog - a 12-DOF quadruped robot dog. ROS2 Humble in Docker on a Raspberry Pi 4/5 (upgraded from Pi 3, migrated from ROS1). Joint hardware & software project.
 
 ### Topics
 
